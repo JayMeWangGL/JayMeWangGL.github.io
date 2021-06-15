@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.jianshu.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="RocketMQ实战 PS:我这里使用的是自定义的RoketMQ进行消息的发送和消费的，原理都差不多，万变不离其宗。  创建配置文件类 首先创建RocketMqConfig、RocketMqProducerConfig、RocketMqConsumerConfig类，里面包含RocketMQ所需的所有配置，等到创建Consumer和Producer的时候可以一键配置，文中所有代码块均省略gette">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ实战">
+<meta property="og:url" content="https://www.jianshu.com/u/0d77a51a171d/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="JayMeWangGL">
+<meta property="og:description" content="RocketMQ实战 PS:我这里使用的是自定义的RoketMQ进行消息的发送和消费的，原理都差不多，万变不离其宗。  创建配置文件类 首先创建RocketMqConfig、RocketMqProducerConfig、RocketMqConsumerConfig类，里面包含RocketMQ所需的所有配置，等到创建Consumer和Producer的时候可以一键配置，文中所有代码块均省略gette">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-06-15T07:39:32.000Z">
+<meta property="article:modified_time" content="2021-06-15T07:54:08.240Z">
+<meta property="article:author" content="王国立">
+<meta property="article:tag" content="RocketMQ">
+<meta property="article:tag" content="消息队列">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.jianshu.com/u/0d77a51a171d/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>RocketMQ实战 | JayMeWangGL</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">JayMeWangGL</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/JayMeWangGL" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.jianshu.com/u/0d77a51a171d/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/photo.jpg">
+      <meta itemprop="name" content="王国立">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JayMeWangGL">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RocketMQ实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-15 15:39:32 / 修改时间：15:54:08" itemprop="dateCreated datePublished" datetime="2021-06-15T15:39:32+08:00">2021-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="RocketMQ实战"><a href="#RocketMQ实战" class="headerlink" title="RocketMQ实战"></a>RocketMQ实战</h3><hr>
+<p>PS:我这里使用的是自定义的RoketMQ进行消息的发送和消费的，原理都差不多，万变不离其宗。</p>
+<hr>
+<h4 id="创建配置文件类"><a href="#创建配置文件类" class="headerlink" title="创建配置文件类"></a>创建配置文件类</h4><ul>
+<li><p>首先创建RocketMqConfig、RocketMqProducerConfig、RocketMqConsumerConfig类，里面包含RocketMQ所需的所有配置，等到创建Consumer和Producer的时候可以一键配置，文中所有代码块均省略getter\setter方法</p>
+<a id="more"></a>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketMqConfig</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String namesrvAddr = <span class="string">&quot;127.0.0.1:9876&quot;</span>;</span><br><span class="line">	<span class="keyword">private</span> RocketMqProducerConfig producerConfig = <span class="keyword">new</span> RocketMqProducerConfig();</span><br><span class="line">	<span class="keyword">private</span> RocketMqConsumerConfig consumerConfig = <span class="keyword">new</span> RocketMqConsumerConfig();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketMqProducerConfig</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> String groupName = <span class="string">&quot;producer&quot;</span>;</span><br><span class="line">	<span class="keyword">private</span> String instanceName = <span class="string">&quot;producer_instance&quot;</span>;</span><br><span class="line">	<span class="keyword">private</span> String topic = <span class="string">&quot;topic&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketMqConsumerConfig</span> </span>&#123;</span><br><span class="line">	<span class="comment">//组名</span></span><br><span class="line">	<span class="keyword">private</span> String groupName = <span class="string">&quot;consumer&quot;</span>;</span><br><span class="line">	<span class="comment">//实例名</span></span><br><span class="line">	<span class="keyword">private</span> String instanceName = <span class="string">&quot;consumer_instance&quot;</span>;</span><br><span class="line">	<span class="comment">// 订阅主题和标签Map</span></span><br><span class="line">	<span class="keyword">private</span> Map&lt;String, String&gt; subscriptions = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">	<span class="comment">//设置批量消费，以提升消费吞吐量，默认是1</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> consumeMessageBatchMaxSize = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h4 id="创建Consumer和Producer"><a href="#创建Consumer和Producer" class="headerlink" title="创建Consumer和Producer"></a>创建Consumer和Producer</h4><ul>
+<li><p>创建RocketMqProducer、RocketMqConsumer类，里面包括构造方法(有参、无参)、start、stop等方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketMqProducer</span> <span class="keyword">implements</span> <span class="title">MqProducer</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> DefaultMQProducer producer;</span><br><span class="line">	<span class="keyword">private</span> RocketMqConfig config;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> isStarted = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">RocketMqProducer</span><span class="params">(RocketMqConfig config)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.config = config;</span><br><span class="line">		producer = <span class="keyword">new</span> DefaultMQProducer(config.getProducerConfig().getGroupName());</span><br><span class="line">		producer.setInstanceName(config.getProducerConfig().getInstanceName());</span><br><span class="line">		producer.setVipChannelEnabled(<span class="keyword">false</span>);</span><br><span class="line">		producer.setNamesrvAddr(config.getNamesrvAddr());</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isStarted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> isStarted;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		producer.start();</span><br><span class="line">		isStarted = <span class="keyword">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		producer.shutdown();</span><br><span class="line">		isStarted = <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> MqSendResult <span class="title">send</span><span class="params">(String tag, AbstractMessage t)</span> </span>&#123;</span><br><span class="line">        t.setTopic(config.getProducerConfig().getTopic());</span><br><span class="line">        t.setTag(tag);</span><br><span class="line">        Message msg = <span class="keyword">new</span> Message(t.getTopic(), </span><br><span class="line">                                  t.getTag(), </span><br><span class="line">                                  t.getKey(),</span><br><span class="line">                                  t.getMessageType().getType(),</span><br><span class="line">                                  t.getBody(),</span><br><span class="line">                                  <span class="keyword">true</span>);</span><br><span class="line">        SendResult sendResult = producer.send(msg);</span><br><span class="line">        t.setMessageId(sendResult.getMsgId());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 返回结果</span></span><br><span class="line">        MqSendResult mqSendResult = <span class="keyword">new</span> MqSendResult();</span><br><span class="line">        mqSendResult.setSuccess(<span class="keyword">true</span>);</span><br><span class="line">        mqSendResult.setCode(sendResult.getSendStatus().toString());</span><br><span class="line">        mqSendResult.setMsgId(sendResult.getMsgId());</span><br><span class="line">        <span class="keyword">return</span> mqSendResult;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RocketMqConsumer</span> <span class="keyword">implements</span> <span class="title">MqConsumer</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> MqMessageHandler handler = <span class="keyword">null</span>;</span><br><span class="line">	<span class="keyword">private</span> DefaultMQPushConsumer consumer;</span><br><span class="line">	<span class="keyword">private</span> RocketMqConfig config;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> isStarted = <span class="keyword">false</span>;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">RocketMqConsumer</span><span class="params">(RocketMqConfig config)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.config = config;</span><br><span class="line">		consumer = <span class="keyword">new</span> DefaultMQPushConsumer(config.getConsumerConfig().getGroupName());</span><br><span class="line">		consumer.setInstanceName(config.getConsumerConfig().getInstanceName());</span><br><span class="line">		consumer.setVipChannelEnabled(<span class="keyword">false</span>);</span><br><span class="line">		consumer.setConsumeMessageBatchMaxSize(config.getConsumerConfig().getConsumeMessageBatchMaxSize());</span><br><span class="line">		consumer.setNamesrvAddr(config.getNamesrvAddr());</span><br><span class="line">		<span class="comment">// 从队列头开始消费</span></span><br><span class="line">		consumer.setConsumeFromWhere(ConsumeFromWhere.CONSUME_FROM_FIRST_OFFSET);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isStarted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> isStarted;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		consumer.registerMessageListener(<span class="keyword">new</span> MessageListenerConcurrently() &#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> ConsumeConcurrentlyStatus <span class="title">consumeMessage</span><span class="params">(List&lt;MessageExt&gt; msgs, ConsumeConcurrentlyContext Context)</span> </span>&#123;</span><br><span class="line">                <span class="keyword">for</span> (MessageExt msg : msgs) &#123;</span><br><span class="line">                    System.out.println(msg.getbody());</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (handler != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    handler.handle(t);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> ConsumeConcurrentlyStatus.CONSUME_SUCCESS;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">for</span>(Entry&lt;String, String&gt; sub : config.getConsumerConfig().getSubscriptions().entrySet()) &#123;</span><br><span class="line">				consumer.subscribe(sub.getKey(), sub.getValue());</span><br><span class="line">			&#125;</span><br><span class="line">			consumer.start();</span><br><span class="line">			isStarted = <span class="keyword">true</span>;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">			isStarted = <span class="keyword">false</span>;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> Exception(MqLibConstants.LIB_MQ_ROCKETMQ, MqLibExceptionEnum.MQ_CLIENT_EXCEPTION, ex);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">for</span>(Entry&lt;String, String&gt; sub : config.getConsumerConfig().getSubscriptions().entrySet()) &#123;</span><br><span class="line">			consumer.unsubscribe(sub.getKey());</span><br><span class="line">		&#125;</span><br><span class="line">		consumer.shutdown();</span><br><span class="line">		isStarted = <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setHandler</span><span class="params">(MqMessageHandler handler)</span></span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.handler = handler;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<hr>
+<h4 id="消息发送与消费"><a href="#消息发送与消费" class="headerlink" title="消息发送与消费"></a>消息发送与消费</h4><ul>
+<li><p>创建Producer类，在其中创建RocketMqConfig、RocketMqProducer对象；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Producer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        RocketMqConfig config = <span class="keyword">new</span> RocketMqConfig();</span><br><span class="line">        MqProducerClient producer = <span class="keyword">new</span> MqProducerClient(config);</span><br><span class="line">        producer.start();<span class="comment">//启动生产者</span></span><br><span class="line">        JsonMessage jsonMessage = <span class="keyword">new</span> JsonMessage();<span class="comment">//自定义消息类</span></span><br><span class="line">        jsonMessage.setData(<span class="string">&quot;JsonMessage!&quot;</span>);</span><br><span class="line">        producer.send(<span class="string">&quot;json&quot;</span>, jsonMessage);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建Consumer类，在其中创建RocketMqConfig、RocketMqConsumer对象；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        RocketMqConfig config = <span class="keyword">new</span> RocketMqConfig();</span><br><span class="line">        Map&lt;String,String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(config.getProducerConfig().getTopic(),<span class="string">&quot;json&quot;</span>);</span><br><span class="line">        config.getConsumerConfig().setSubscriptions(map);</span><br><span class="line">        MqConsumerClient consumer = <span class="keyword">new</span> MqConsumerClient(config);</span><br><span class="line">        consumer.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p>启动两个类，同时别忘了启动RocketMQ的服务。可以在RocketMQ可视化界面看到生产者、消费者以及消息等信息</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RocketMQ/" rel="tag"># RocketMQ</a>
+              <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"># 消息队列</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/20/Redis%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE/" rel="prev" title="Redis的安装及配置">
+      <i class="fa fa-chevron-left"></i> Redis的安装及配置
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#RocketMQ%E5%AE%9E%E6%88%98"><span class="nav-number">1.</span> <span class="nav-text">RocketMQ实战</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%B1%BB"><span class="nav-number">1.1.</span> <span class="nav-text">创建配置文件类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAConsumer%E5%92%8CProducer"><span class="nav-number">1.2.</span> <span class="nav-text">创建Consumer和Producer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E4%B8%8E%E6%B6%88%E8%B4%B9"><span class="nav-number">1.3.</span> <span class="nav-text">消息发送与消费</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="王国立"
+      src="/images/photo.jpg">
+  <p class="site-author-name" itemprop="name">王国立</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JayMeWangGL" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JayMeWangGL" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.jianshu.com/u/0d77a51a171d" title="简书 → https:&#x2F;&#x2F;www.jianshu.com&#x2F;u&#x2F;0d77a51a171d"><i class="fab fa-book fa-fw"></i>简书</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王国立</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -157,7 +157,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.jianshu.com/u/0d77a51a171d/2021/06/15/test/">
+    <link itemprop="mainEntityOfPage" href="https://www.jianshu.com/u/0d77a51a171d/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/photo.jpg">
@@ -171,7 +171,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/06/15/test/" class="post-title-link" itemprop="url">test</a>
+            <a href="/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/" class="post-title-link" itemprop="url">RocketMQ实战</a>
         </h2>
 
         <div class="post-meta">
@@ -180,8 +180,22 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2021-06-15 10:33:25" itemprop="dateCreated datePublished" datetime="2021-06-15T10:33:25+08:00">2021-06-15</time>
+              <time title="创建时间：2021-06-15 15:39:32 / 修改时间：15:54:08" itemprop="dateCreated datePublished" datetime="2021-06-15T15:39:32+08:00">2021-06-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">消息队列</span></a>
+                </span>
             </span>
 
           
@@ -195,7 +209,19 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h3 id="RocketMQ实战"><a href="#RocketMQ实战" class="headerlink" title="RocketMQ实战"></a>RocketMQ实战</h3><hr>
+<p>PS:我这里使用的是自定义的RoketMQ进行消息的发送和消费的，原理都差不多，万变不离其宗。</p>
+<hr>
+<h4 id="创建配置文件类"><a href="#创建配置文件类" class="headerlink" title="创建配置文件类"></a>创建配置文件类</h4><ul>
+<li><p>首先创建RocketMqConfig、RocketMqProducerConfig、RocketMqConsumerConfig类，里面包含RocketMQ所需的所有配置，等到创建Consumer和Producer的时候可以一键配置，文中所有代码块均省略getter\setter方法</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/15/RocketMQ%E5%AE%9E%E6%88%98/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -237,10 +263,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-11-20 14:24:10 / 修改时间：14:25:40" itemprop="dateCreated datePublished" datetime="2020-11-20T14:24:10+08:00">2020-11-20</time>
+              <time title="创建时间：2020-11-20 14:24:10" itemprop="dateCreated datePublished" datetime="2020-11-20T14:24:10+08:00">2020-11-20</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-15 15:52:55" itemprop="dateModified" datetime="2021-06-15T15:52:55+08:00">2021-06-15</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -266,21 +298,14 @@
 <p><code>docker pull redis</code></p>
 <p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/image-20201120133604697.png" alt="image-20201120133604697"></p>
 <p>配置Redis挂载</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p &#x2F;mydata&#x2F;redis&#x2F;conf</span><br><span class="line">touch &#x2F;mydata&#x2F;redis&#x2F;conf&#x2F;redis.conf</span><br><span class="line"></span><br><span class="line">docker run -p 6379:6379 --name redis \</span><br><span class="line">-v &#x2F;mydata&#x2F;redis&#x2F;data:&#x2F;data \</span><br><span class="line">-v &#x2F;mydata&#x2F;redis&#x2F;conf&#x2F;redis.conf:&#x2F;etc&#x2F;redis&#x2F;redis.conf \</span><br><span class="line">-d redis redis-server &#x2F;etc&#x2F;redis&#x2F;redis.conf</span><br><span class="line">​&#96;&#96;&#96;</span><br></pre></td></tr></table></figure>
-
-
-
-<p>配置完成后检查容器信息</p>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/image-20201120135246128.png" alt="image-20201120135246128"></p>
-<p>现在Redis存储的数据都是在内存中的，如果重启Redis数据就会丢失，我们需要配置持久化</p>
-<p>在redis.conf文件中 添加<code>appendonly yes</code></p>
-<p>至此Redis安装完成</p>
-<h2 id="可视化界面"><a href="#可视化界面" class="headerlink" title="可视化界面"></a>可视化界面</h2><p>我们可以使用RedisDesktopManager软件来连接Docker中的Redis，可以更加直观的获取数据</p>
-<p>安装软件后点击左下角的Connect to Redis Server，填写对应的信息测试连接</p>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/image-20201120142235584.png" alt="image-20201120142235584"></p>
-<p>连接成功后即可从视窗中看到Redis中存储的所有数据</p>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/image-20201120142317152.png" alt="image-20201120142317152"></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/20/Redis%E7%9A%84%E5%AE%89%E8%A3%85%E5%8F%8A%E9%85%8D%E7%BD%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -330,7 +355,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-20 11:28:01" itemprop="dateModified" datetime="2020-11-20T11:28:01+08:00">2020-11-20</time>
+                <time title="修改时间：2021-06-15 15:52:48" itemprop="dateModified" datetime="2021-06-15T15:52:48+08:00">2021-06-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -358,24 +383,14 @@
 <p>如果需要安装指定版本mysql，请输入以下指令</p>
 <p><code>sudo docker pull mysql:5.7</code></p>
 <p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/mysql1.png"></p>
-<p>如果大家安装进度很慢的话，可以配置下Docker的阿里云镜像</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p &#x2F;etc&#x2F;docker</span><br><span class="line">sudo tee &#x2F;etc&#x2F;docker&#x2F;daemon.json &lt;&lt;-&#39;EOF&#39;</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;z5bxh2ek.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/docker%E9%95%9C%E5%83%8F.png"></p>
-<p>安装完成后可以使用以下命令来查看是否存在mysql</p>
-<p><code>sudo docker images</code></p>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/%E6%9F%A5%E7%9C%8Bmysql.png"><br>如图所示即安装完毕</p>
-<hr>
-<h2 id="配置MySQL参数"><a href="#配置MySQL参数" class="headerlink" title="配置MySQL参数"></a>配置MySQL参数</h2><p>与Docker中数据库的端口进行绑定</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo docker run -p 3306:3306 --name mysql \</span><br><span class="line">-v &#x2F;mydata&#x2F;mysql&#x2F;log:&#x2F;var&#x2F;log&#x2F;mysql \</span><br><span class="line">-v &#x2F;mydata&#x2F;mysql&#x2F;data:&#x2F;var&#x2F;lib&#x2F;mysql \</span><br><span class="line">-v &#x2F;mydata&#x2F;mysql&#x2F;conf:&#x2F;etc&#x2F;mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD&#x3D;root \</span><br><span class="line">-d mysql:5.7</span><br><span class="line"></span><br><span class="line">name指定容器名字 -v目录挂载 -p指定端口映射  -e设置mysql参数 -d后台运行</span><br></pre></td></tr></table></figure>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/%E9%85%8D%E7%BD%AE%E7%AB%AF%E5%8F%A3.png"></p>
-<p>稍后可以用数据库连接工具来测试连接，我这里使用的是Navicat</p>
-<p><img src="https://gitee.com/JayMe-WangGL/blog-image/raw/master/img/%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5.png"></p>
-<p>可以看到数据库连接成功，至此MySQL的安装完成</p>
-<h3 id="接下来配置my-conf文件"><a href="#接下来配置my-conf文件" class="headerlink" title="接下来配置my.conf文件"></a>接下来配置my.conf文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">vi &#x2F;mydata&#x2F;mysql&#x2F;conf&#x2F;my.cnf </span><br><span class="line"></span><br><span class="line">[client]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line">[mysql]</span><br><span class="line">default-character-set&#x3D;utf8</span><br><span class="line">[mysqld]</span><br><span class="line">init_connect&#x3D;&#39;SET collation_connection &#x3D; utf8_unicode_ci&#39;</span><br><span class="line">init_connect&#x3D;&#39;SET NAMES utf8&#39;</span><br><span class="line">character-set-server&#x3D;utf8</span><br><span class="line">collation-server&#x3D;utf8_unicode_ci</span><br><span class="line">skip-character-set-client-handshake</span><br><span class="line">skip-name-resolve</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>保存文件并重启mysql <code>docker restart mysql</code></p>
-<p>至此MySQL的参数配置完成</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/19/Docker%E5%AE%89%E8%A3%85MySQL/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -417,10 +432,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-11-19 11:43:01 / 修改时间：11:46:03" itemprop="dateCreated datePublished" datetime="2020-11-19T11:43:01+08:00">2020-11-19</time>
+              <time title="创建时间：2020-11-19 11:43:01" itemprop="dateCreated datePublished" datetime="2020-11-19T11:43:01+08:00">2020-11-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-15 15:52:38" itemprop="dateModified" datetime="2021-06-15T15:52:38+08:00">2021-06-15</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -445,21 +466,14 @@
           <h3 id="卸载旧版本"><a href="#卸载旧版本" class="headerlink" title="卸载旧版本"></a>卸载旧版本</h3><p>在安装Docker前需要先卸载旧版本的Docker，避免日后出现问题。<br>建议在安装前执行以下命令。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo yum remove docker \</span><br><span class="line">              docker-client \</span><br><span class="line">              docker-client-latest \</span><br><span class="line">              docker-common \</span><br><span class="line">              docker-latest \</span><br><span class="line">              docker-latest-logrotate \</span><br><span class="line">              docker-logrotate \</span><br><span class="line">              docker-engine</span><br></pre></td></tr></table></figure>
 <hr>
-<h3 id="安装-Docker-Engine-Community"><a href="#安装-Docker-Engine-Community" class="headerlink" title="安装 Docker Engine-Community"></a>安装 Docker Engine-Community</h3><p>首次安装Docker Engine-Community前需要先设置Docker仓库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -y yum-utils \</span><br><span class="line">  device-mapper-persistent-data \</span><br><span class="line">  lvm2</span><br></pre></td></tr></table></figure>
-
-<p>推荐使用阿里云的地址来设置</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo yum-config-manager \</span><br><span class="line">    --add-repo \</span><br><span class="line">    http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;docker-ce&#x2F;linux&#x2F;centos&#x2F;docker-ce.repo</span><br></pre></td></tr></table></figure>
-
-<p>最后安装Docker Engine-Communit</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
-<p>根据提示一路输入Y即可</p>
-<hr>
-<h3 id="启动Docker"><a href="#启动Docker" class="headerlink" title="启动Docker"></a>启动Docker</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
-<p>设置开机自动启动Docker</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable docker</span><br></pre></td></tr></table></figure>
-
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/19/CentOS%E5%AE%89%E8%A3%85Docker/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -549,13 +563,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
